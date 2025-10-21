@@ -1,3 +1,9 @@
+mod models;
+
+use models::{Blockchain};           //tirar aviso chato se for usar colocar Block , 
+
 fn main() {
-    println!("Hello, world!");
+    let lp_coin =Blockchain::new(0);
+    println!("{:#?}", lp_coin.chain);
+    
 }
