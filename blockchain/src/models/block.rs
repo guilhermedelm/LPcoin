@@ -37,3 +37,20 @@ impl Block{
 
 
 //teste de mineração para ver se blockchainfunciona
+impl Block{
+
+    pub fn mine(&mut self,difficulty:u64) -> (&Block, u64, String) {
+        loop{
+            if self.nonce % 1000000 == 0{
+                println!("milha")
+            }
+            if self.hash.chars().take_while(|&c| c == '0').count() >= difficulty.try_into().unwrap(){
+                return (self,self.nonce,self.hash.clone());
+            }
+            else{
+                self.nonce += 1;
+
+            }
+        }
+    }
+}
