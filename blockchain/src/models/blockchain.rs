@@ -1,6 +1,7 @@
 //importando dependências
 use chrono::prelude::*;
 use super::block::Block;
+use super::transaction::Transaction;
 
 //**********
 type Blocks = Vec<Block>;
@@ -12,7 +13,7 @@ pub struct Blockchain{
 
 }
 impl Blockchain{
-
+    //método para iniciar blockchain
     pub fn new(difficulty:u64) -> Self{
         let mut genesis = Block{
             index: 0,
@@ -20,7 +21,8 @@ impl Blockchain{
             data:"0".to_string(),
             prev_hash: String::new(),
             nonce: 0,
-            hash: String::new()
+            hash: String::new(),
+            miner_key: "0".to_string(),
 
         };   
 
@@ -45,8 +47,11 @@ impl Blockchain{
     //função para adicionar bloco à blockchain
     pub fn add_block(&mut self,new_block:Block) {
        if self.validate_block(&new_block){
-        self.chain.push(new_block);
+        self.chain.push(new_block.clone());
+        let tx_coinbase = Transaction::coinbase(&new_block.miner_key.clone());
+        
 
+        
         }
     }
 

@@ -1,6 +1,6 @@
 mod models;
-use chrono::prelude::*;
-use models::{Block,Blockchain,Transaction,TxInputs,TxOutputs};           
+//use chrono::prelude::*;
+use models::{Block,Blockchain,Transaction,TxInputs,TxOutputs,Mempool,Wallet};           
 
 fn main() {
     let lp_coin =Blockchain::new(0);
@@ -19,6 +19,9 @@ fn main() {
         Vec::<TxInputs>::new(),
         Vec::<TxOutputs>::new()
     ));
+    
+    println!("{:#?}", Wallet::create_wallet())
+
 
 
 }

@@ -3,6 +3,7 @@
 use serde::{Serialize,Deserialize};
 use chrono::prelude::*;
 use sha2::{Sha256, Digest};
+use super::mempool::Mempool;
 
 //lembrar de tornar funções privadas
 
@@ -23,15 +24,20 @@ pub struct TxOutputs{
 
 }
 
+
+
+
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub struct Transaction{
-    id: String,                 //id da transação
-    inputs: Vec<TxInputs>,       //vetor de TxInputs
-    outputs:Vec<TxOutputs>,      //vetor de TxOutputs
-    timestamp:DateTime<Utc>,
+    pub id: String,                 //id da transação
+    pub inputs: Vec<TxInputs>,       //vetor de TxInputs
+    pub outputs:Vec<TxOutputs>,      //vetor de TxOutputs
+    pub timestamp:DateTime<Utc>,
 }
 
 impl Transaction{
+
+    //criar nova transaction
     pub fn new(inputs:Vec<TxInputs>, outputs:Vec<TxOutputs>) -> Self{
         let mut transaction = Transaction{
             id:  String::new(),
@@ -58,9 +64,10 @@ impl Transaction{
 
 //recompensa de trabalho
 impl Transaction{
-    pub fn coinbase(to:&str,value:u64) -> Self{
+    pub fn coinbase(to:&str) -> Self{
+        let value = 100;
         let outputs = vec![TxOutputs{value: value,public_key_hash: to.to_string()}];
-        let mut tx = Transaction.new(vec![],outputs);
+        let mut tx = Transaction::new(vec![],outputs);
         tx
     }
 }
