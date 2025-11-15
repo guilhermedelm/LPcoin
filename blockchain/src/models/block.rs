@@ -23,15 +23,14 @@ pub struct Block{
 //Funções de Block
 
 impl Block{
-    //Função para calcular hash
-    pub fn calculate_hash(&self) -> String {
-        let block_data = self.clone();
-        //block_data.hash = String;
-        let serialized_block_data = serde_json::to_string(&block_data).unwrap(); //converte dados da block_data para json para poder 
-
-        let mut hasher = Sha256::new();                                          //inicia função de hash Sha256
-        hasher.update(serialized_block_data);                                    //atualiza valor da função hash com serialized_block_data
-        let result = hasher.finalize();                                          //finaliza função e retorna resultado
+    pub fn calculate_hash(&self) -> String{
+        let mut hasher = Sha256::new();
+        hasher.update(self.index.to_string());
+        hasher.update(self.timestamp.to_rfc3339());
+        hasher.update(&self.data);
+        hasher.update(&self.prev_hash);
+        hasher.update(self.nonce.to_string());
+        let result = hasher.finalize();
         format!("{:x}", result)
     }
 }
