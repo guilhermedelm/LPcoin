@@ -45,12 +45,12 @@ impl Blockchain{
 
 impl Blockchain{
     //função para adicionar bloco à blockchain
-    pub fn add_block(&mut self,new_block:Block) {
-       if self.validate_block(&new_block){
-        self.chain.push(new_block.clone());
-        let tx_coinbase = Transaction::coinbase(&new_block.miner_key.clone());
-        
-
+    pub fn add_block(&mut self,new_block:Block) -> bool{
+        if self.validate_block(&new_block){
+            self.chain.push(new_block.clone());
+            let tx_coinbase = Transaction::coinbase(&new_block.miner_key.clone());
+            true
+        false
         
         }
     }
@@ -73,6 +73,7 @@ impl Blockchain{
                 false
             }
             else{
+
                 println!("passou");
                 true
             }
@@ -86,4 +87,40 @@ impl Blockchain{
 
 
         
+}
+impl Blockchain{
+
+    
+    pub fn mine(&self, public_key) -> (&Block, u64, String) {
+        let id = self.chain.last().index;
+        let data = //integrar com Mempool
+        prev_hash = self.chain.last().hash;
+        miner_key = public_key;
+
+        let mut candidate = Block{
+            index: id,
+            timestamp: Utc::now(),
+            data:data,
+            prev_hash: prev_hash,
+            nonce: 0,
+            hash: String::new(),
+            miner_key: public_key,
+        }
+        candidate.hash = candidate.calculate_hash()
+    
+        loop{
+            //apenas contador para ver quantos números o nonce já incrementou
+            if candidate.nonce % 1000000000 == 0{
+                println!("bilhão")
+            }
+            if candidate.hash.chars().take_while(|&c| c == '0').count() >= difficulty.try_into().unwrap(){
+                return add_block(&self,candidate)
+            }
+            else{
+                candidate.nonce += 1;
+                }
+            }
+        }
+        validate_block(&self,candidate)
+
 }
