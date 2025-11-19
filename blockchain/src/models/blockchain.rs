@@ -49,10 +49,10 @@ impl Blockchain{
         if self.validate_block(&new_block){
             self.chain.push(new_block.clone());
             let tx_coinbase = Transaction::coinbase(&new_block.miner_key.clone());
-            true
-        false
+            return true
+        };
+        return false
         
-        }
     }
 
     //função para validar requisitos de um bloco 
@@ -60,6 +60,8 @@ impl Blockchain{
     pub fn validate_block(&mut self,block_check:&Block) -> bool{
         if let Some(last_block) = self.chain.last(){
             if block_check.index != last_block.index + 1{
+                print!("{}",block_check.index);
+                print!("{}",last_block.index);
                 println!("invalid index");
                 false
             }
@@ -91,36 +93,42 @@ impl Blockchain{
 impl Blockchain{
 
     
-    pub fn mine(&self, public_key) -> (&Block, u64, String) {
-        let id = self.chain.last().index;
-        let data = //integrar com Mempool
-        prev_hash = self.chain.last().hash;
-        miner_key = public_key;
+    pub fn mine(&mut self, public_key:String) -> &Block {
+        let id = self.chain.last().unwrap().index.clone() +1;
+        let data = "00".to_string();//integrar com Mempool
+        let pre_hash = self.chain.last().unwrap().hash.clone();
 
         let mut candidate = Block{
-            index: id,
+            index: id ,
             timestamp: Utc::now(),
             data:data,
-            prev_hash: prev_hash,
+            prev_hash: pre_hash,
             nonce: 0,
             hash: String::new(),
             miner_key: public_key,
-        }
-        candidate.hash = candidate.calculate_hash()
+        };
+        candidate.hash = candidate.calculate_hash();
     
         loop{
             //apenas contador para ver quantos números o nonce já incrementou
             if candidate.nonce % 1000000000 == 0{
                 println!("bilhão")
             }
-            if candidate.hash.chars().take_while(|&c| c == '0').count() >= difficulty.try_into().unwrap(){
-                return add_block(&self,candidate)
+            if candidate.hash.chars().take_while(|&c| c == '0').count() >= self.difficulty.try_into().unwrap(){
+               if self.add_block(candidate.clone()) == true{
+                break
+               }
+               else{
+                println!("invalid block");
+                break 
+               }
             }
             else{
                 candidate.nonce += 1;
                 }
-            }
         }
-        validate_block(&self,candidate)
-
+        
+        //validate_block(&self,candidate)
+        return self.chain.last().unwrap();
+    }
 }

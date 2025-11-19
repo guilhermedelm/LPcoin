@@ -3,7 +3,7 @@
 use serde::{Serialize,Deserialize};
 use chrono::prelude::*;
 use sha2::{Sha256, Digest};
-use super::mempool::Mempool;
+//use super::mempool::Mempool;
 
 //lembrar de tornar funções privadas
 

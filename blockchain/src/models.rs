@@ -13,4 +13,4 @@ pub use transaction::TxInputs;
 pub use transaction::TxOutputs;
 pub use mempool::Mempool;
 pub use wallet::Wallet;
-pub use wallet::Signature;
+//pub use wallet::Signature;
