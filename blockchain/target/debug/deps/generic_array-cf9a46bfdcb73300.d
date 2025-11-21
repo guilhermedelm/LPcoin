@@ -1,0 +1,11 @@
+C:\Linguagens de Programacao\LPcoin\blockchain\target\debug\deps\generic_array-cf9a46bfdcb73300.d: C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\lib.rs C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\hex.rs C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\impls.rs C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\arr.rs C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\functional.rs C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\iter.rs C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\sequence.rs
+
+C:\Linguagens de Programacao\LPcoin\blockchain\target\debug\deps\libgeneric_array-cf9a46bfdcb73300.rmeta: C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\lib.rs C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\hex.rs C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\impls.rs C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\arr.rs C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\functional.rs C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\iter.rs C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\sequence.rs
+
+C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\lib.rs:
+C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\hex.rs:
+C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\impls.rs:
+C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\arr.rs:
+C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\functional.rs:
+C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\iter.rs:
+C:\Users\berna\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\generic-array-0.14.9\src\sequence.rs:

@@ -2,6 +2,7 @@
 use chrono::prelude::*;
 use super::block::Block;
 use super::transaction::Transaction;
+use crate::models::Mempool;
 
 //**********
 type Blocks = Vec<Block>;
@@ -130,5 +131,47 @@ impl Blockchain{
         
         //validate_block(&self,candidate)
         return self.chain.last().unwrap();
+    }
+}
+
+impl Blockchain{
+   pub fn mine_from_mempool(&mut self, miner_key:String, mempool:&mut Mempool) -> &Block {
+        let id = self.chain.last().unwrap().index.clone() +1;
+        let prev_hash = self.chain.last().unwrap().hash.clone();
+        let mut txs: Vec<Transaction> = mempool.transactions.values().cloned().collect();
+        let coinbase_tx = Transaction::coinbase(&miner_key);
+        txs.push(coinbase_tx);
+        let data = serde_json::to_string(&txs).unwrap();
+
+        let mut candidate = Block{
+            index: id ,
+            timestamp: Utc::now(),
+            data,
+            prev_hash,
+            nonce: 0,
+            hash: String::new(),
+            miner_key: miner_key.clone(),
+        };
+
+        loop {
+            candidate.hash = candidate.calculate_hash();
+
+            if candidate.hash.chars().take(self.difficulty as usize).all(|c| c == '0') {
+                if self.add_block(candidate.clone()) {
+                    // 6️⃣ Remove mined transactions from mempool
+                    for tx in txs.iter() {
+                        mempool.transactions.remove(&tx.id);
+                    }
+                    break;
+                } else {
+                    println!("Invalid block after PoW");
+                    break;
+                }
+            } else {
+                candidate.nonce += 1;
+            }
+        }
+
+        self.chain.last().unwrap()
     }
 }
