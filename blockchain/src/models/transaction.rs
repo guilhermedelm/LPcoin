@@ -1,69 +1,63 @@
-
-
 use serde::{Serialize,Deserialize};
-use chrono::prelude::*;
+use bincode;
 use sha2::{Sha256, Digest};
-//use super::mempool::Mempool;
+use crate::models::utxo::Outpoint;
 
-//lembrar de tornar funções privadas
-
-
-
-//"Ponteiros" que apontam para Txoutputs(valores que você recebeu antes) que são usados como saldos na transferência
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
-pub struct TxInputs{
-    id_prev_tx: String,  //id da transação anterior(Txinput que originou ela)
-    output_index: u32,   // Índice da saída na transação anterior
-    signature: Vec<u8>,  // Assinatura provando propriedade
-    public_key_hash: String,
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct TxInput{
+    pub outpoint: Outpoint,
+    pub pub_key: Vec<u8>,
+    pub signature: Vec<u8>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
-pub struct TxOutputs{
-    value:u64,                    //valor da transação(em unidades da moeda)
-    address: [u8; 20],              //endereço do destinatário
-
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct TxOutput{
+    pub value: u64,
+    pub pub_key_hash: Vec<u8>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Transaction{
-    pub id: String,                 //id da transação
-    pub inputs: Vec<TxInputs>,       //vetor de TxInputs
-    pub outputs:Vec<TxOutputs>,      //vetor de TxOutputs
-    pub timestamp:DateTime<Utc>,
+    pub inputs: Vec<TxInput>,
+    pub outputs: Vec<TxOutput>,
+
 }
 
 impl Transaction{
-
-    //criar nova transaction
-    pub fn new(inputs:Vec<TxInputs>, outputs:Vec<TxOutputs>) -> Self{
-        let mut transaction = Transaction{
-            id:  String::new(),
+    pub fn new(inputs:Vec<TxInput>, outputs:Vec<TxOutput>) -> Self{
+        Transaction{
             inputs,
             outputs,
-            timestamp:Utc::now(),
-        };
-        transaction.set_id();
-        transaction
-
+        }
     }
-    pub fn set_id(&mut self) -> String {
-        let block_data = self.clone();
-        //block_data.hash = String;
-        let serialized_block_data = serde_json::to_string(&block_data).unwrap(); //converte dados da block_data para json para poder 
 
-        let mut hasher = Sha256::new();                                          //inicia função de hash Sha256
-        hasher.update(serialized_block_data);                                    //atualiza valor da função hash com serialized_block_data
-        let result = hasher.finalize();                                          //finaliza função e retorna resultado
-        self.id = format!("{:x}", result);
-        format!("{:x}", result)
+    pub fn tx_id(&self) -> [u8; 32] {
+        let mut data = Vec::new();
+
+        for inp in &self.inputs {
+            data.extend(&inp.outpoint.tx_id);
+            data.extend(&inp.outpoint.index.to_be_bytes());
+            data.extend(&inp.pub_key);
+        }
+
+        for out in &self.outputs {
+            data.extend(&out.value.to_be_bytes());
+            data.extend(&out.pub_key_hash);
+        }
+
+        let hash = Sha256::digest(&data);
+        let mut id = [0u8; 32];
+        id.copy_from_slice(&hash);
+        id
     }
 
     pub fn coinbase(to:&str) -> Self{
-        let value = 100;
-        let outputs = vec![TxOutputs{value: value,public_key_hash: to.to_string()}];
-        let mut tx = Transaction::new(vec![],outputs);
-        tx
+        let reward = 50;
+        let output = TxOutput{
+            value: reward,
+            pub_key_hash: to.as_bytes().to_vec(),
+        };
+        Transaction::new(vec![], vec![output])
     }
 
 }

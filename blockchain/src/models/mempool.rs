@@ -5,28 +5,44 @@ use super::transaction::Transaction;
 use std::collections::HashMap;
 
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Mempool{
-    pub transactions: HashMap<String ,Transaction>,
+    pub transactions: HashMap<[u8; 32], Transaction>,
+    pub max_size: usize,
 }
 
 impl Mempool{
-    pub fn add(&mut self,tx:Transaction) -> bool{
-        let max_size = 5000;
-        if self.transactions.len() > max_size{
-            return false
+    pub fn new() -> Self{
+        Mempool { 
+            transactions: HashMap::new(),
+            max_size: 5000 
         }
-        //if !tx.is_valid(){
-        //    return false          //falta implementar o método is_valid na transaction
-        //}
-        self.transactions.insert(tx.id.clone(),tx);
-        true
-
     }
-}
 
-impl Mempool {
-    pub fn remove(&mut self, tx_id: &str) {
-        self.transactions.remove(tx_id);
+    pub fn add(&mut self, tx: Transaction) -> bool{
+        let tx_id = tx.tx_id();
+
+        if self.transactions.len() >= self.max_size{ //mempool cheia
+            return false;
+        }
+
+        if self.contains(tx_id){
+            return false;
+        }
+
+        self.transactions.insert(tx_id, tx);
+        true
+    }
+
+    pub fn remove(&mut self, tx_id: [u8;32]){
+        self.transactions.remove(&tx_id);
+    }
+
+    pub fn contains(&self, tx_id: [u8; 32]) -> bool{
+        self.transactions.contains_key(&tx_id)
+    }
+
+    pub fn all(&self) -> Vec<Transaction>{
+        self.transactions.values().cloned().collect()
     }
 }

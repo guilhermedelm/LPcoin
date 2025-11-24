@@ -155,7 +155,7 @@ impl Blockchain{
             if candidate.hash.chars().take(self.difficulty as usize).all(|c| c == '0') {
                 if self.add_block(candidate.clone()) {
                     for tx in txs.iter() {
-                        mempool.transactions.remove(&tx.id);
+                        mempool.remove(tx.tx_id());
                     }
                     break;
                 } else {

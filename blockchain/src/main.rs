@@ -1,7 +1,7 @@
 mod models;
 //use chrono::prelude::*;
-use models::{Block,Blockchain,Transaction,TxInputs,TxOutputs,Mempool,Wallet};
-use std::io;         
+use models::{Block,Blockchain,Transaction,TxInput,TxOutput,Mempool,Wallet,Outpoint};
+use std::io;
 
 fn main() {
     let mut lp_coin =Blockchain::new(0);

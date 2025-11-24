@@ -10,7 +10,7 @@ use rand::rngs::OsRng;
 #[derive( Debug, Clone, PartialEq, Eq)]  
 pub struct Wallet{
     private_key:SecretKey,
-    public_key:Secp256k1PublicKey,
+    pub public_key:Secp256k1PublicKey,
     address: [u8; 20],
     balance: u64,
     nonce: u64,
@@ -54,7 +54,7 @@ impl Wallet{
 impl Wallet{
 
     //gerar chave pública
-    pub fn publicKey(private_key:SecretKey) -> Secp256k1PublicKey{
+    pub fn public_key(private_key:SecretKey) -> Secp256k1PublicKey{
     let secp = Secp256k1::new();
     let pub_key = Secp256k1PublicKey::from_secret_key(&secp,&private_key);
     pub_key
@@ -88,7 +88,7 @@ impl Wallet{
     pub fn create_wallet() -> Wallet{
         //primeiro criar chave pública
         let mut secret_key = Self::generate();
-        let mut pub_key = Self::publicKey(secret_key);
+        let mut pub_key = Self::public_key(secret_key);
         let mut addr = Self::address(pub_key);
         let new = Wallet{
             private_key:secret_key,
