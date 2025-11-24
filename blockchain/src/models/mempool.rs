@@ -26,7 +26,7 @@ impl Mempool{
 }
 
 impl Mempool {
-    pub fn remove(&mut self, tx_id: &String) {
+    pub fn remove(&mut self, tx_id: &str) {
         self.transactions.remove(tx_id);
     }
 }

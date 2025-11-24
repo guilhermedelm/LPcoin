@@ -12,20 +12,18 @@ use sha2::{Sha256, Digest};
 //"Ponteiros" que apontam para Txoutputs(valores que você recebeu antes) que são usados como saldos na transferência
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub struct TxInputs{
-    id_prev_tx: String,          //id da transação anterior(Txinput que originou ela)
+    id_prev_tx: String,  //id da transação anterior(Txinput que originou ela)
     output_index: u32,   // Índice da saída na transação anterior
     signature: Vec<u8>,  // Assinatura provando propriedade
+    public_key_hash: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub struct TxOutputs{
     value:u64,                    //valor da transação(em unidades da moeda)
-    public_key_hash: String,      //chave pública de quem }
+    address: [u8; 20],              //endereço do destinatário
 
 }
-
-
-
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 pub struct Transaction{
@@ -60,14 +58,12 @@ impl Transaction{
         self.id = format!("{:x}", result);
         format!("{:x}", result)
     }
-}
 
-//recompensa de trabalho
-impl Transaction{
     pub fn coinbase(to:&str) -> Self{
         let value = 100;
         let outputs = vec![TxOutputs{value: value,public_key_hash: to.to_string()}];
         let mut tx = Transaction::new(vec![],outputs);
         tx
     }
+
 }

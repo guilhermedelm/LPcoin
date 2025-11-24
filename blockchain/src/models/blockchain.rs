@@ -91,9 +91,9 @@ impl Blockchain{
 
         
 }
-impl Blockchain{
 
-    
+impl Blockchain{
+ 
     pub fn mine(&mut self, public_key:String) -> &Block {
         let id = self.chain.last().unwrap().index.clone() +1;
         let data = "00".to_string();//integrar com Mempool
@@ -111,10 +111,6 @@ impl Blockchain{
         candidate.hash = candidate.calculate_hash();
     
         loop{
-            //apenas contador para ver quantos números o nonce já incrementou
-            if candidate.nonce % 1000000000 == 0{
-                println!("bilhão")
-            }
             if candidate.hash.chars().take_while(|&c| c == '0').count() >= self.difficulty.try_into().unwrap(){
                if self.add_block(candidate.clone()) == true{
                 break
@@ -158,7 +154,6 @@ impl Blockchain{
 
             if candidate.hash.chars().take(self.difficulty as usize).all(|c| c == '0') {
                 if self.add_block(candidate.clone()) {
-                    // 6️⃣ Remove mined transactions from mempool
                     for tx in txs.iter() {
                         mempool.transactions.remove(&tx.id);
                     }
