@@ -1,8 +1,9 @@
 //importando dempendências 
 use chrono::prelude::*;
 use serde::{Serialize,Deserialize};
-//use super::blockchain::Blockchain;
 use sha2::{Sha256, Digest};
+use super::transaction::Transaction;
+use super::mempool::Mempool;
 
 //**********
 
@@ -17,7 +18,7 @@ pub struct Block{
     pub nonce: u64,
     pub hash: String,
     pub miner_key: String,
-
+    pub transactions: Vec<Transaction>,
 }
 
 //Funções de Block
@@ -36,6 +37,12 @@ impl Block{
 }
 
 
-//teste de mineração para ver se blockchainfunciona
-impl Block{
+impl Block {
+    // Integração mempool-bloco: pega transações da mempool
+    pub fn from_mempool(mempool: &mut Mempool, max_tx: usize) -> Vec<Transaction> {
+        let transactions = mempool.select_for_block(max_tx);
+        let tx_ids: Vec<[u8; 32]> = transactions.iter().map(|tx| tx.tx_id()).collect();
+        mempool.remove_batch(&tx_ids);
+        transactions
+    }
 }

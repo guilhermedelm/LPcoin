@@ -33,6 +33,19 @@ impl Mempool{
         self.transactions.insert(tx_id, tx);
         true
     }
+    pub fn get(&self, tx_id: [u8; 32]) -> Option<&Transaction> {
+        self.transactions.get(&tx_id)
+    }
+
+    pub fn select_for_block(&self, count: usize) -> Vec<Transaction> {
+        self.transactions.values().take(count).cloned().collect()
+    }
+
+    pub fn remove_batch(&mut self, tx_ids: &[[u8; 32]]) {
+        for tx_id in tx_ids {
+            self.transactions.remove(tx_id);
+        }
+    }
 
     pub fn remove(&mut self, tx_id: [u8;32]){
         self.transactions.remove(&tx_id);

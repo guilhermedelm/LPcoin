@@ -24,7 +24,7 @@ impl Blockchain{
             nonce: 0,
             hash: String::new(),
             miner_key: "0".to_string(),
-
+            transactions: Vec::new(),
         };   
 
         let mut chain = Vec::new();
@@ -107,6 +107,7 @@ impl Blockchain{
             nonce: 0,
             hash: String::new(),
             miner_key: public_key,
+            transactions: Vec::new(),
         };
         candidate.hash = candidate.calculate_hash();
     
@@ -147,6 +148,7 @@ impl Blockchain{
             nonce: 0,
             hash: String::new(),
             miner_key: miner_key.clone(),
+            transactions: txs.clone(),
         };
 
         loop {
