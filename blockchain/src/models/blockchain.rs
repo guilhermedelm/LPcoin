@@ -1,174 +1,133 @@
-//importando dependências
 use chrono::prelude::*;
 use super::block::Block;
 use super::transaction::Transaction;
+use super::utxo::UTXOSet;
 use crate::models::Mempool;
 
-//**********
 type Blocks = Vec<Block>;
-#[derive(Debug)]
-pub struct Blockchain{
-    pub genesis: Block,         //bloco genesis para ter como base
-    pub chain: Blocks,          //vetor de blocos
-    pub difficulty: u64,        //nonce para determinar dificuldade do PoW
 
+#[derive(Debug)]
+pub struct Blockchain {
+    pub genesis: Block,
+    pub chain: Blocks,
+    pub difficulty: u64,
+    pub utxo: UTXOSet,
 }
-impl Blockchain{
-    //método para iniciar blockchain
-    pub fn new(difficulty:u64) -> Self{
-        let mut genesis = Block{
+
+impl Blockchain {
+    pub fn new(difficulty: u64) -> Self {
+        let mut genesis = Block {
             index: 0,
             timestamp: Utc::now(),
-            data:"0".to_string(),
-            prev_hash: String::new(),
+            data: "Genesis Block".to_string(),
+            prev_hash: String::from("0"),
             nonce: 0,
             hash: String::new(),
-            miner_key: "0".to_string(),
+            miner_key: String::from("genesis"),
             transactions: Vec::new(),
-        };   
+        };
 
-        let mut chain = Vec::new();
-
+        let tx_genesis = Transaction::coinbase("genesis_wallet");
+        genesis.transactions.push(tx_genesis);
+        
         genesis.hash = genesis.calculate_hash();
 
+        let mut chain = Vec::new();
         chain.push(genesis.clone());
-        //cria instância da blockchain(inicia block chain)
-        let  blockchain = Blockchain{
+
+        let mut utxo = UTXOSet::new();
+        utxo.reindex(&chain);
+
+        Blockchain {
             genesis,
             chain,
             difficulty,
-        };    
-        blockchain
-    }
-    
-}
-
-
-impl Blockchain{
-    //função para adicionar bloco à blockchain
-    pub fn add_block(&mut self,new_block:Block) -> bool{
-        if self.validate_block(&new_block){
-            self.chain.push(new_block.clone());
-            let tx_coinbase = Transaction::coinbase(&new_block.miner_key.clone());
-            return true
-        };
-        return false
-        
-    }
-
-    //função para validar requisitos de um bloco 
-
-    pub fn validate_block(&mut self,block_check:&Block) -> bool{
-        if let Some(last_block) = self.chain.last(){
-            if block_check.index != last_block.index + 1{
-                print!("{}",block_check.index);
-                print!("{}",last_block.index);
-                println!("invalid index");
-                false
-            }
-            
-            else if block_check.prev_hash != last_block.hash{
-                println!("invalid prev_hash");
-                false
-            }
-            else if last_block.timestamp >= block_check.timestamp{
-                println!("invalid timestamp");
-                false
-            }
-            else{
-
-                println!("passou");
-                true
-            }
-            
-        }
-        else {
-            println!("bloco vazio");
-            false
+            utxo,
         }
     }
 
+    pub fn add_block(&mut self, new_block: Block) -> bool {
+        if self.validate_block(&new_block) {
 
-        
-}
-
-impl Blockchain{
- 
-    pub fn mine(&mut self, public_key:String) -> &Block {
-        let id = self.chain.last().unwrap().index.clone() +1;
-        let data = "00".to_string();//integrar com Mempool
-        let pre_hash = self.chain.last().unwrap().hash.clone();
-
-        let mut candidate = Block{
-            index: id ,
-            timestamp: Utc::now(),
-            data:data,
-            prev_hash: pre_hash,
-            nonce: 0,
-            hash: String::new(),
-            miner_key: public_key,
-            transactions: Vec::new(),
-        };
-        candidate.hash = candidate.calculate_hash();
-    
-        loop{
-            if candidate.hash.chars().take_while(|&c| c == '0').count() >= self.difficulty.try_into().unwrap(){
-               if self.add_block(candidate.clone()) == true{
-                break
-               }
-               else{
-                println!("invalid block");
-                break 
-               }
+            for tx in &new_block.transactions {
+                self.utxo.update(tx);
             }
-            else{
-                candidate.nonce += 1;
-                }
-        }
-        
-        //validate_block(&self,candidate)
-        return self.chain.last().unwrap();
-    }
-}
 
-impl Blockchain{
-   pub fn mine_from_mempool(&mut self, miner_key:String, mempool:&mut Mempool) -> &Block {
-        let id = self.chain.last().unwrap().index.clone() +1;
+            self.chain.push(new_block);
+            println!("✅ Bloco adicionado e UTXOs atualizados!");
+            return true;
+        }
+        false
+    }
+
+    pub fn validate_block(&self, block_check: &Block) -> bool {
+        let last_block = self.chain.last().unwrap();
+
+        if block_check.index != last_block.index + 1 {
+            println!("❌ Erro: Index inválido");
+            return false;
+        } 
+        if block_check.prev_hash != last_block.hash {
+            println!("❌ Erro: Hash anterior não bate");
+            return false;
+        } 
+        if block_check.hash != block_check.calculate_hash() {
+            println!("❌ Erro: Hash do bloco inválido");
+            return false;
+        }
+
+        for (i, tx) in block_check.transactions.iter().enumerate() {
+            if !tx.verify() {
+                println!("❌ Erro: Transação #{} tem assinatura inválida", i);
+                return false;
+            }
+        }
+
+        true
+    }
+
+    pub fn mine_from_mempool(&mut self, miner_address: String, mempool: &mut Mempool) -> Option<Block> {
+        let id = self.chain.last().unwrap().index + 1;
         let prev_hash = self.chain.last().unwrap().hash.clone();
-        let mut txs: Vec<Transaction> = mempool.transactions.values().cloned().collect();
-        let coinbase_tx = Transaction::coinbase(&miner_key);
-        txs.push(coinbase_tx);
-        let data = serde_json::to_string(&txs).unwrap();
+        let mut txs = mempool.select_for_block(20);
 
-        let mut candidate = Block{
-            index: id ,
+        let coinbase_tx = Transaction::coinbase(&miner_address);
+        txs.insert(0, coinbase_tx);
+
+        let mut candidate = Block {
+            index: id,
             timestamp: Utc::now(),
-            data,
+            data: "Mempool Block".to_string(),
             prev_hash,
             nonce: 0,
             hash: String::new(),
-            miner_key: miner_key.clone(),
+            miner_key: miner_address.clone(),
             transactions: txs.clone(),
         };
+
+        println!("⛏️  Iniciando mineração do bloco #{}...", id);
 
         loop {
             candidate.hash = candidate.calculate_hash();
 
-            if candidate.hash.chars().take(self.difficulty as usize).all(|c| c == '0') {
+            let target = "0".repeat(self.difficulty as usize);
+            if candidate.hash.starts_with(&target) {
+
                 if self.add_block(candidate.clone()) {
-                    for tx in txs.iter() {
-                        mempool.remove(tx.tx_id());
-                    }
-                    break;
+                    let tx_ids: Vec<[u8; 32]> = txs.iter().map(|tx| tx.tx_id()).collect();
+                    mempool.remove_batch(&tx_ids);
+                    return Some(candidate);
                 } else {
-                    println!("Invalid block after PoW");
-                    break;
+                    println!("❌ Falha ao adicionar bloco minerado (validação falhou).");
+                    return None;
                 }
-            } else {
-                candidate.nonce += 1;
+            }
+            
+            candidate.nonce += 1;
+            
+            if candidate.nonce % 100000 == 0 {
+                // print!("."); 
             }
         }
-
-        self.chain.last().unwrap()
     }
 }
