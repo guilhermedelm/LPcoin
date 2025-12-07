@@ -23,7 +23,7 @@ impl Blockchain{
             prev_hash: String::new(),
             nonce: 0,
             hash: String::new(),
-            miner_key: "0".to_string(),
+            miner_key: vec![],
             transactions: Vec::new(),
         };   
 
@@ -49,7 +49,7 @@ impl Blockchain{
     pub fn add_block(&mut self,new_block:Block) -> bool{
         if self.validate_block(&new_block){
             self.chain.push(new_block.clone());
-            let tx_coinbase = Transaction::coinbase(&new_block.miner_key.clone());
+            let tx_coinbase = Transaction::coinbase(new_block.miner_key.clone());
             return true
         };
         return false
@@ -94,10 +94,14 @@ impl Blockchain{
 
 impl Blockchain{
  
-    pub fn mine(&mut self, public_key:String) -> &Block {
+    pub fn mine(&mut self, public_key:Vec<u8>) -> &Block {
         let id = self.chain.last().unwrap().index.clone() +1;
         let data = "00".to_string();//integrar com Mempool
         let pre_hash = self.chain.last().unwrap().hash.clone();
+
+        let coinbase_tx = Transaction::coinbase(public_key.clone());
+        let txs = vec![coinbase_tx];
+        let data = serde_json::to_string(&txs).unwrap();
 
         let mut candidate = Block{
             index: id ,
@@ -132,11 +136,11 @@ impl Blockchain{
 }
 
 impl Blockchain{
-   pub fn mine_from_mempool(&mut self, miner_key:String, mempool:&mut Mempool) -> &Block {
+   pub fn mine_from_mempool(&mut self, miner_pub_key: Vec<u8>, mempool:&mut Mempool) -> &Block {
         let id = self.chain.last().unwrap().index.clone() +1;
         let prev_hash = self.chain.last().unwrap().hash.clone();
         let mut txs: Vec<Transaction> = mempool.transactions.values().cloned().collect();
-        let coinbase_tx = Transaction::coinbase(&miner_key);
+        let coinbase_tx = Transaction::coinbase(miner_pub_key.clone());
         txs.push(coinbase_tx);
         let data = serde_json::to_string(&txs).unwrap();
 
@@ -147,7 +151,7 @@ impl Blockchain{
             prev_hash,
             nonce: 0,
             hash: String::new(),
-            miner_key: miner_key.clone(),
+            miner_key: miner_pub_key.clone(),
             transactions: txs.clone(),
         };
 

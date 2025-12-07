@@ -8,8 +8,9 @@ fn main() {
     print!("Blockchain criada com bloco gênesis");
     let mut my_wallet = Wallet::create_wallet();
     print!("carteira criada");
-    let mine = Blockchain::mine(&mut lp_coin,"abc".to_string());
+    let mine = Blockchain::mine(&mut lp_coin, my_wallet.public_key.serialize().to_vec());
     println!("{:#?}",mine);
+
     
     let mut action = String::new();
     println!("1-Minerar bloco\n2-Criar transação\n3-Sair");

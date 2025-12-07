@@ -12,3 +12,5 @@ sha2 = "0.10.0"                                        #biblioteca de cálculo d
 rand = "0.8"
 hex = "0.4"
 bincode = "1.3.3"
+ripemd = "0.1"
+base58 = "0.1.0"

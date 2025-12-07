@@ -17,7 +17,7 @@ pub struct Block{
     pub prev_hash: String,
     pub nonce: u64,
     pub hash: String,
-    pub miner_key: String,
+    pub miner_key: Vec<u8>,
     pub transactions: Vec<Transaction>,
 }
 

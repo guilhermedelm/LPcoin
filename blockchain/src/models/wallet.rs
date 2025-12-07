@@ -4,6 +4,9 @@ use sha2::{Sha256, Digest};
 //use std::fmt;
 use rand::rngs::OsRng;
 //use serde::{Serialize,Deserialize};
+use crate::models::utxo::Outpoint;
+use crate::models::transaction::TxOutput;
+use ripemd::{Ripemd160, Digest as RipemdDigest};
 
 
 
@@ -14,6 +17,7 @@ pub struct Wallet{
     address: [u8; 20],
     balance: u64,
     nonce: u64,
+    pub utxos: Vec<(Outpoint, TxOutput)>,
 
 }
 
@@ -55,16 +59,16 @@ impl Wallet{
 
     //gerar chave pública
     pub fn public_key(private_key:SecretKey) -> Secp256k1PublicKey{
-    let secp = Secp256k1::new();
-    let pub_key = Secp256k1PublicKey::from_secret_key(&secp,&private_key);
-    pub_key
+        let secp = Secp256k1::new();
+        let pub_key = Secp256k1PublicKey::from_secret_key(&secp,&private_key);
+        pub_key
     }
     
     //converte chave pública da rede de bytes para string
     
 
     //criar um endereço de carteira à partir da chave pública 
-        pub fn address(public_key:Secp256k1PublicKey) -> [u8; 20]{
+    pub fn address(public_key:Secp256k1PublicKey) -> [u8; 20]{
         // Serializa chave pública (formato não comprimido: 65 bytes)
         let pub_bytes = public_key.serialize_uncompressed();
         
@@ -96,6 +100,7 @@ impl Wallet{
             address:addr,
             balance:0,
             nonce:0,
+            utxos:Vec::new(),
         };
         new
     }
