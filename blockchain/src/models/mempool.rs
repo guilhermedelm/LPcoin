@@ -30,6 +30,17 @@ impl Mempool{
             return false;
         }
 
+        for existing in self.transactions.values() {
+            for inp in &existing.inputs {
+                for new_inp in &tx.inputs {
+                    if inp.outpoint == new_inp.outpoint {
+                        // conflito: outpoint já gasto por tx na mempool
+                        return false;
+                    }
+                }
+            }
+        }
+
         self.transactions.insert(tx_id, tx);
         true
     }
