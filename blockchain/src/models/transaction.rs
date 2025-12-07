@@ -153,28 +153,19 @@ impl Transaction{
 
         let secp = Secp256k1::new();
 
-        // -------------------------------------------------------
-        // 1) Obter a public key do remetente a partir da SecretKey
-        // -------------------------------------------------------
         let sender_pub_key = SecpPublicKey::from_secret_key(&secp, sender_secret);
         let sender_pub_bytes = sender_pub_key.serialize().to_vec();
 
-        // hash do remetente (para bater com outputs pub_key_hash)
         let sender_pub_key_hash = Transaction::pub_key_hash(&sender_pub_bytes);
 
-        // -------------------------------------------------------
-        // 2) Selecionar UTXOs pertencentes ao remetente
-        // -------------------------------------------------------
         let mut selected: Vec<(Outpoint, TxOutput)> = Vec::new();
         let mut total_accumulated = 0;
 
         for (outpoint, utxo) in utxos.iter() {
-            // UTXO pertence ao remetente?
             if utxo.pub_key_hash != sender_pub_key_hash {
                 continue;
             }
 
-            // Evitar double-spend dentro da mempool
             let is_spent_in_mempool = mempool.transactions.values().any(|tx| {
                 tx.inputs.iter().any(|i| i.outpoint == *outpoint)
             });
@@ -191,23 +182,17 @@ impl Transaction{
         }
 
         if total_accumulated < amount {
-            return Err("Insufficient funds".into());
+            return Err("Fundos insuficientes".into());
         }
 
-        // -------------------------------------------------------
-        // 3) Construir tx.inputs
-        // -------------------------------------------------------
         let inputs: Vec<TxInput> = selected.iter().map(|(op, _)| {
             TxInput {
                 outpoint: op.clone(),
-                pub_key: Vec::new(),    // será preenchido por sign_inputs
-                signature: Vec::new(),  // será preenchido por sign_inputs
+                pub_key: Vec::new(),
+                signature: Vec::new(),
             }
         }).collect();
 
-        // -------------------------------------------------------
-        // 4) Construir tx.outputs
-        // -------------------------------------------------------
         let mut outputs = Vec::new();
 
         // output para destinatário
@@ -230,19 +215,13 @@ impl Transaction{
         tx.sign_input(sender_secret);
 
         if !tx.verify_signatures() {
-            return Err("Signature verification failed".into());
+            return Err("Falha na verificação da assinatura".into());
         }
 
-        // -------------------------------------------------------
-        // 6) Validar contra UTXO set
-        // -------------------------------------------------------
         if !tx.validate_tx(utxos, &sender_pub_bytes) {
-            return Err("Transaction validation against UTXOSet failed".into());
+            return Err("Transação inválida".into());
         }
 
-        // -------------------------------------------------------
-        // 7) Adicionar na mempool
-        // -------------------------------------------------------
         mempool.add(tx.clone());
 
         Ok(tx)
