@@ -47,17 +47,27 @@ impl Blockchain {
     }
 
     pub fn add_block(&mut self, new_block: Block) -> bool {
-        if self.validate_block(&new_block) {
+        if !self.validate_block(&new_block) {
+            return false;
+        }
 
-            for tx in &new_block.transactions {
-                self.utxo.update(tx);
+        // snapshot temporário
+        let mut temp_utxo = self.utxo.clone();
+
+        for tx in &new_block.transactions {
+            if !tx.validate_against_utxo(&temp_utxo) {
+                println!("❌ Transação inválida economicamente");
+                return false;
             }
 
-            self.chain.push(new_block);
-            println!("✅ Bloco adicionado e UTXOs atualizados!");
-            return true;
+            temp_utxo.update(tx);
         }
-        false
+
+        // commit final
+        self.utxo = temp_utxo;
+        self.chain.push(new_block);
+
+        true
     }
 
     pub fn validate_block(&self, block_check: &Block) -> bool {
@@ -86,11 +96,20 @@ impl Blockchain {
         true
     }
 
-    pub fn mine_from_mempool(&mut self, miner_address: String, mempool: &mut Mempool) -> Option<Block> {
+   pub fn mine_from_mempool(
+        &mut self,
+        miner_address: String,
+        mempool: &mut Mempool
+    ) -> Option<Block> {
+
+        let real_txs = mempool.select_for_block(20);
+
         let id = self.chain.last().unwrap().index + 1;
         let prev_hash = self.chain.last().unwrap().hash.clone();
-        let mut txs = mempool.select_for_block(20);
 
+        let mut txs = real_txs.clone();
+
+        // ✅ UMA coinbase por bloco
         let coinbase_tx = Transaction::coinbase(&miner_address);
         txs.insert(0, coinbase_tx);
 
@@ -109,25 +128,27 @@ impl Blockchain {
 
         loop {
             candidate.hash = candidate.calculate_hash();
-
             let target = "0".repeat(self.difficulty as usize);
+
             if candidate.hash.starts_with(&target) {
 
                 if self.add_block(candidate.clone()) {
-                    let tx_ids: Vec<[u8; 32]> = txs.iter().map(|tx| tx.tx_id()).collect();
+
+                    let tx_ids: Vec<[u8; 32]> = real_txs
+                        .iter()
+                        .map(|tx| tx.tx_id())
+                        .collect();
+
                     mempool.remove_batch(&tx_ids);
+
                     return Some(candidate);
                 } else {
-                    println!("❌ Falha ao adicionar bloco minerado (validação falhou).");
+                    println!("❌ Falha ao adicionar bloco minerado.");
                     return None;
                 }
             }
-            
+
             candidate.nonce += 1;
-            
-            if candidate.nonce % 100000 == 0 {
-                // print!("."); 
-            }
         }
     }
 }

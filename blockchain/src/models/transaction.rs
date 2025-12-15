@@ -3,6 +3,8 @@ use sha2::{Sha256, Digest};
 use secp256k1::{Secp256k1, Message, SecretKey, ecdsa::Signature, PublicKey};
 use crate::models::utxo::Outpoint;
 use std::str::FromStr;
+use rand::Rng;
+use crate::models::utxo::UTXOSet;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TxInput {
@@ -19,22 +21,43 @@ pub struct TxOutput {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Transaction {
+    pub nonce: u64,
     pub inputs: Vec<TxInput>,
     pub outputs: Vec<TxOutput>,
 }
 
 impl Transaction {
     pub fn new(inputs: Vec<TxInput>, outputs: Vec<TxOutput>) -> Self {
-        Transaction { inputs, outputs }
+        Transaction { nonce: rand::thread_rng().gen(), inputs, outputs }
+    }
+
+    pub fn validate_against_utxo(&self, utxo: &UTXOSet) -> bool {
+        if self.is_coinbase() {
+            return true;
+        }
+
+        let mut input_sum = 0;
+
+        for input in &self.inputs {
+            match utxo.utxos.get(&input.outpoint) {
+                Some(out) => input_sum += out.value,
+                None => return false,
+            }
+        }
+
+        let output_sum: u64 = self.outputs.iter().map(|o| o.value).sum();
+
+        input_sum == output_sum
     }
 
     pub fn tx_id(&self) -> [u8; 32] {
         let mut data = Vec::new();
 
+        data.extend(&self.nonce.to_be_bytes());
+
         for inp in &self.inputs {
             data.extend(&inp.outpoint.tx_id);
             data.extend(&inp.outpoint.index.to_be_bytes());
-            data.extend(&inp.pub_key); 
         }
 
         for out in &self.outputs {

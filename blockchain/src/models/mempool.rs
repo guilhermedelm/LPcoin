@@ -3,6 +3,7 @@ use serde::{Serialize,Deserialize};
 //use sha2::{Sha256, Digest};
 use super::transaction::Transaction;
 use std::collections::HashMap;
+use crate::models::utxo::Outpoint;
 
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -19,20 +20,27 @@ impl Mempool{
         }
     }
 
-    pub fn add(&mut self, tx: Transaction) -> bool{
-        let tx_id = tx.tx_id();
+    fn is_outpoint_already_spent(&self, outpoint: &Outpoint) -> bool {
+        self.transactions.values().any(|existing_tx| {
+            existing_tx.inputs.iter().any(|input| {
+                input.outpoint == *outpoint
+            })
+        })
+    }
 
-        if self.transactions.len() >= self.max_size{ //mempool cheia
-            return false;
+    pub fn add(&mut self, tx: Transaction) -> bool {
+        for input in &tx.inputs {
+            if self.is_outpoint_already_spent(&input.outpoint) {
+                println!("❌ Double-spend detectado na mempool!");
+                return false;
+            }
         }
 
-        if self.contains(tx_id){
-            return false;
-        }
-
-        self.transactions.insert(tx_id, tx);
+        let txid = tx.tx_id();
+        self.transactions.insert(txid, tx);
         true
     }
+
     pub fn get(&self, tx_id: [u8; 32]) -> Option<&Transaction> {
         self.transactions.get(&tx_id)
     }

@@ -1,58 +1,12 @@
-   0.059952300s  INFO prepare_target{force=false package_id=blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain) target="blockchain"}: cargo::core::compiler::fingerprint: fingerprint error for blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain)/Check { test: false }/TargetInner { name: "blockchain", doc: true, ..: with_path("C:\\Linguagens de Programacao\\LPcoin\\blockchain\\src\\main.rs", Edition2024) }
-   0.060010300s  INFO prepare_target{force=false package_id=blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain) target="blockchain"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Linguagens de Programacao\LPcoin\blockchain\target\debug\.fingerprint\blockchain-31b581120a39b372\bin-blockchain`
-
-Caused by:
-    O sistema não pode encontrar o arquivo especificado. (os error 2)
-
-Stack backtrace:
-   0: git_midx_writer_dump
-   1: git_midx_writer_dump
-   2: git_midx_writer_dump
-   3: git_midx_writer_dump
-   4: git_filter_source_repo
-   5: git_filter_source_repo
-   6: git_filter_source_repo
-   7: git_filter_source_repo
-   8: git_filter_source_repo
-   9: git_filter_source_repo
-  10: git_filter_source_repo
-  11: git_libgit2_prerelease
-  12: <unknown>
-  13: <unknown>
-  14: <unknown>
-  15: <unknown>
-  16: git_midx_writer_dump
-  17: git_filter_source_repo
-  18: git_midx_writer_dump
-  19: BaseThreadInitThunk
-  20: RtlUserThreadStart
-   0.080036400s  INFO prepare_target{force=false package_id=blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain) target="blockchain"}: cargo::core::compiler::fingerprint: fingerprint error for blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain)/Check { test: true }/TargetInner { name: "blockchain", doc: true, ..: with_path("C:\\Linguagens de Programacao\\LPcoin\\blockchain\\src\\main.rs", Edition2024) }
-   0.080099200s  INFO prepare_target{force=false package_id=blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain) target="blockchain"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Linguagens de Programacao\LPcoin\blockchain\target\debug\.fingerprint\blockchain-cfeed29a122e88ac\test-bin-blockchain`
-
-Caused by:
-    O sistema não pode encontrar o arquivo especificado. (os error 2)
-
-Stack backtrace:
-   0: git_midx_writer_dump
-   1: git_midx_writer_dump
-   2: git_midx_writer_dump
-   3: git_midx_writer_dump
-   4: git_filter_source_repo
-   5: git_filter_source_repo
-   6: git_filter_source_repo
-   7: git_filter_source_repo
-   8: git_filter_source_repo
-   9: git_filter_source_repo
-  10: git_filter_source_repo
-  11: git_libgit2_prerelease
-  12: <unknown>
-  13: <unknown>
-  14: <unknown>
-  15: <unknown>
-  16: git_midx_writer_dump
-  17: git_filter_source_repo
-  18: git_midx_writer_dump
-  19: BaseThreadInitThunk
-  20: RtlUserThreadStart
+   0.192295700s  INFO prepare_target{force=false package_id=blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain) target="blockchain"}: cargo::core::compiler::fingerprint: stale: changed "C:\\Linguagens de Programacao\\LPcoin\\blockchain\\src\\models\\mempool.rs"
+   0.192342000s  INFO prepare_target{force=false package_id=blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain) target="blockchain"}: cargo::core::compiler::fingerprint:           (vs) "C:\\Linguagens de Programacao\\LPcoin\\blockchain\\target\\debug\\.fingerprint\\blockchain-ddc1dd1e2eddf907\\dep-bin-blockchain"
+   0.192350800s  INFO prepare_target{force=false package_id=blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain) target="blockchain"}: cargo::core::compiler::fingerprint:                FileTime { seconds: 13410252054, nanos: 44426400 } < FileTime { seconds: 13410252118, nanos: 8545900 }
+   0.192591800s  INFO prepare_target{force=false package_id=blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain) target="blockchain"}: cargo::core::compiler::fingerprint: fingerprint dirty for blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain)/Check { test: false }/TargetInner { name: "blockchain", doc: true, ..: with_path("C:\\Linguagens de Programacao\\LPcoin\\blockchain\\src\\main.rs", Edition2021) }
+   0.192631200s  INFO prepare_target{force=false package_id=blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain) target="blockchain"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleItem(ChangedFile { reference: "C:\\Linguagens de Programacao\\LPcoin\\blockchain\\target\\debug\\.fingerprint\\blockchain-ddc1dd1e2eddf907\\dep-bin-blockchain", reference_mtime: FileTime { seconds: 13410252054, nanos: 44426400 }, stale: "C:\\Linguagens de Programacao\\LPcoin\\blockchain\\src\\models\\mempool.rs", stale_mtime: FileTime { seconds: 13410252118, nanos: 8545900 } }))
+   0.206388100s  INFO prepare_target{force=false package_id=blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain) target="blockchain"}: cargo::core::compiler::fingerprint: stale: changed "C:\\Linguagens de Programacao\\LPcoin\\blockchain\\src\\models\\mempool.rs"
+   0.206415600s  INFO prepare_target{force=false package_id=blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain) target="blockchain"}: cargo::core::compiler::fingerprint:           (vs) "C:\\Linguagens de Programacao\\LPcoin\\blockchain\\target\\debug\\.fingerprint\\blockchain-bd7558e807772a83\\dep-test-bin-blockchain"
+   0.206423800s  INFO prepare_target{force=false package_id=blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain) target="blockchain"}: cargo::core::compiler::fingerprint:                FileTime { seconds: 13410252054, nanos: 44426400 } < FileTime { seconds: 13410252118, nanos: 8545900 }
+   0.206642600s  INFO prepare_target{force=false package_id=blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain) target="blockchain"}: cargo::core::compiler::fingerprint: fingerprint dirty for blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain)/Check { test: true }/TargetInner { name: "blockchain", doc: true, ..: with_path("C:\\Linguagens de Programacao\\LPcoin\\blockchain\\src\\main.rs", Edition2021) }
+   0.206672800s  INFO prepare_target{force=false package_id=blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain) target="blockchain"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleItem(ChangedFile { reference: "C:\\Linguagens de Programacao\\LPcoin\\blockchain\\target\\debug\\.fingerprint\\blockchain-bd7558e807772a83\\dep-test-bin-blockchain", reference_mtime: FileTime { seconds: 13410252054, nanos: 44426400 }, stale: "C:\\Linguagens de Programacao\\LPcoin\\blockchain\\src\\models\\mempool.rs", stale_mtime: FileTime { seconds: 13410252118, nanos: 8545900 } }))
     Checking blockchain v0.1.0 (C:\Linguagens de Programacao\LPcoin\blockchain)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.51s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.54s
